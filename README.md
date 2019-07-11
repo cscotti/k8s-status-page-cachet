@@ -17,18 +17,23 @@ https://www.digitalocean.com/community/tutorials/how-to-migrate-a-docker-compose
 
 ## Usage
 
-Step 1: Edit the below parameters;
+### Step 1: Edit parameters;
 
 *postgres-volume0-persistentvolume.yaml*
+```
 storage: 1Gi
 storageClassName: local-storage
 k8s-kubenode1
+```
 
 *postgres-claim0-persistentvolumeclaim.yaml*
+```
 storageClassName: local-storage
 storage: 1Gi
+```
 
 *secret.yaml*
+```
 APP_KEY:
 DB_DRIVER:
 DB_HOST:
@@ -37,25 +42,31 @@ DB_USERNAME:
 DB_PASSWORD:
 POSTGRES_USER:
 POSTGRES_PASSWORD:
+```
 
-Note: I've used the default values on the cachet-docker project.
+**Note**: I've used the default values on the cachet-docker project.
+
 ```
 echo -n 'postgres' | base64
 cG9zdGdyZXM=
 ```
 
 *cachet-deployment.yaml*
+```
 image: vahittabak/cachet-kubernetes
+```
 
+### Step 2: Create a storage class
 
-Step 2: Create a storage class(I've used local volume plugin, https://kubernetes.io/docs/concepts/storage/storage-classes/#local)
+I've used local volume plugin of Kubernetes, 
+https://kubernetes.io/docs/concepts/storage/storage-classes/#local
 
 ```bash
 kubectl -f storage-class.yaml
 kubectl get storageclass
 ```
 
-Step 3: Create persistent volume and claim for DB
+### Step 3: Create persistent volume and claim for DB
 
 Create the objects;
 
@@ -67,7 +78,7 @@ kubectl get persistentvolume
 kubectl get persistentvolumeclaim
 ```
 
-Step 4: Start the application
+### Step 4: Start the application
 
 ```bash
 kubectl create -f cachet-deployment.yaml,cachet-service.yaml,postgres-deployment.yaml,postgres-service.yaml,secret.yaml
