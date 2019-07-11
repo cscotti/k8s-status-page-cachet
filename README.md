@@ -5,7 +5,7 @@ A Kubernetes version of Cachet. https://cachethq.io/
 
 ## Introduction
 
-I've migrated cachet-docker Docker Compose project to Kubernetes to follow the below documentation.
+Following the documentation below, I've migrated cachet-docker Docker Compose project to Kubernetes. 
 https://www.digitalocean.com/community/tutorials/how-to-migrate-a-docker-compose-workflow-to-kubernetes
 
 ## Prerequisites
@@ -17,7 +17,7 @@ https://www.digitalocean.com/community/tutorials/how-to-migrate-a-docker-compose
 
 ## Usage
 
-Step 1: Edit the below parameters for your config;
+Step 1: Edit the below parameters;
 
 *postgres-volume0-persistentvolume.yaml*
 storage: 1Gi
@@ -38,7 +38,7 @@ DB_PASSWORD:
 POSTGRES_USER:
 POSTGRES_PASSWORD:
 
-Note: I've used default values on  the cachet-docker project.
+Note: I've used the default values on the cachet-docker project.
 ```
 echo -n 'postgres' | base64
 cG9zdGdyZXM=
