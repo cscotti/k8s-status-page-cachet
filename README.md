@@ -17,12 +17,13 @@ https://www.digitalocean.com/community/tutorials/how-to-migrate-a-docker-compose
 
 ## Usage
 
-### Step 1: Edit parameters
+### Step 1: Edit parameter
 
 *postgres-volume0-persistentvolume.yaml*
 ```
 storage: 1Gi
 storageClassName: local-storage
+path: /var/tmp
 k8s-kubenode1
 ```
 
@@ -34,21 +35,16 @@ storage: 1Gi
 
 *secret.yaml*
 ```
-APP_KEY:
-DB_DRIVER:
-DB_HOST:
-DB_DATABASE:
-DB_USERNAME:
-DB_PASSWORD:
-POSTGRES_USER:
-POSTGRES_PASSWORD:
+APP_KEY: xxxxxxxxxxxxxxxxxxxxxxxx
 ```
-
 **Note**: I've used the default values on the cachet-docker project.
 
 ```
 echo -n 'postgres' | base64
 cG9zdGdyZXM=
+
+echo -n 'pgsql' | base64
+cGdzcWw=
 ```
 
 *cachet-deployment.yaml*
