@@ -26,6 +26,8 @@ spec:
               key: APP_KEY
         - name: APP_LOG
           value: errorlog
+        - name: APP_DEBUG
+          value: "true"
         - name: DB_DRIVER
           valueFrom:
             secretKeyRef:
@@ -59,6 +61,10 @@ spec:
           value: "false"
         - name: SESSION_DRIVER
           value: file
+        - name: CACHE_DRIVER
+          value: database
+        - name: QUEUE_DRIVER
+          value: database
         image: vahittabak/cachet-kubernetes
         name: cachet
         ports:
