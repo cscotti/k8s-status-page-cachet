@@ -92,3 +92,28 @@ postgres     ClusterIP      10.108.151.113   <none>        5432/TCP       2d3h
 ```
 
 Done. Navigate to it in your browser.
+
+## Troubleshooting
+
+If you see the below problem;
+
+```
+RuntimeException The only supported ciphers are AES-128-CBC and AES-256-CBC with the correct key lengths.
+```
+
+**Workaround; **
+
+```bash
+$ kubectl get pods
+NAME                      READY   STATUS    RESTARTS   AGE
+cachet-5c8649744-qw7ds    1/1     Running   0          2d23h
+postgres-89fdc8fc-zhqfm   1/1     Running   0          2d23h
+
+$ kubectl exec -it cachet-5c8649744-qw7ds -- /bin/bash
+bash-4.4$
+bash-4.4$ php artisan key:generate
+Application key set successfully.
+bash-4.4$ php artisan config:clear
+Configuration cache cleared!
+```
+Done. Navigate to it in your browser again.
