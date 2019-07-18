@@ -27,7 +27,7 @@ spec:
         - name: APP_LOG
           value: errorlog
         - name: APP_DEBUG
-          value: "true"
+          value: "false"
         - name: DB_DRIVER
           valueFrom:
             secretKeyRef:
