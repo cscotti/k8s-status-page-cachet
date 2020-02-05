@@ -9,7 +9,7 @@ Following the documentation below, I've migrated cachet-docker Docker Compose pr
 https://www.digitalocean.com/community/tutorials/how-to-migrate-a-docker-compose-workflow-to-kubernetes
 
 ## Prerequisites
-- A Kubernetes cluster
+- A Kubernetes cluster (eg KIND / Kubernetes In Dockers)
 - kubectl command-line tool to connect to cluster
 - Docker and docker-compose 
 - A Docker Hub account
@@ -79,32 +79,32 @@ $ kubectl get persistentvolumeclaim
 ```bash
 $ kubectl create -f cachet-deployment.yaml,cachet-service.yaml,postgres-deployment.yaml,postgres-service.yaml,secret.yaml
 
-$ kubectl get pods
+$ kubectl get pods -n default
 NAME                      READY   STATUS    RESTARTS   AGE
 cachet-5c8649744-qw7ds    1/1     Running   0          2d3h
 postgres-89fdc8fc-zhqfm   1/1     Running   0          2d3h
 
-$ kubectl get svc
+$ kubectl get svc -n default
 NAME         TYPE           CLUSTER-IP       EXTERNAL-IP   PORT(S)        AGE
-cachet       LoadBalancer   10.108.29.172    <pending>     80:31080/TCP   2d3h
-kubernetes   ClusterIP      10.96.0.1        <none>        443/TCP        3d
-postgres     ClusterIP      10.108.151.113   <none>        5432/TCP       2d3h
+cachet       LoadBalancer   10.108.29.172    172.17.255.3     8000:30978/TCP   2d3h
+kubernetes   ClusterIP      10.96.0.1        <none>         443/TCP          3h43m
+postgres     LoadBalancer   10.101.54.34     172.17.255.4   5432:32761/TCP   33m
 ```
 
-Done. Navigate to it in your browser.
+Done. Navigate to it in your browser (http://172.17.255.3:8000/).
 
 ## Troubleshooting
 
 If you see the below problem;
 
 ```
-RuntimeException The only supported ciphers are AES-128-CBC and AES-256-CBC with the correct key lengths.
+  [RuntimeException] No supported encrypter found. The cipher and / or key length are invalid.
 ```
 
 **Workaround; **
 
 ```bash
-$ kubectl get pods
+$ kubectl get pods -n default
 NAME                      READY   STATUS    RESTARTS   AGE
 cachet-5c8649744-qw7ds    1/1     Running   0          2d23h
 postgres-89fdc8fc-zhqfm   1/1     Running   0          2d23h
@@ -112,8 +112,48 @@ postgres-89fdc8fc-zhqfm   1/1     Running   0          2d23h
 $ kubectl exec -it cachet-5c8649744-qw7ds -- /bin/bash
 bash-4.4$
 bash-4.4$ php artisan key:generate
-Application key set successfully.
+Application key [base64:YRfxkub3SLCgPSNFBcY6SyInA7kFY0KKJXdG2wgsFnQ=] set successfully.
+
+bash-4.4$ APP_KEY=base64:YRfxkub3SLCgPSNFBcY6SyInA7kFY0KKJXdG2wgsFnQ=
+
 bash-4.4$ php artisan config:clear
 Configuration cache cleared!
+
+bash-4.4$ php artisan config:cache
+Configuration cache cleared!
+Configuration cached successfully!
+
+bash-4.4$ php artisan app:update
+Clearing settings cache...
+Settings cache cleared!
+Backing up database...
+Dumping database and uploading...
+
+Successfully dumped pgsql, compressed with gzip and store it to local at /var/www/html/database/backups/2020-02-05 21.50.28
+Backup completed!
+Configuration cache cleared!
+Configuration cached successfully!
+Route cache cleared!
+Routes cached successfully!
+Copied Directory [/vendor/roumen/feed/src/views] To [/resources/views/vendor/feed]
+Publishing complete for tag []!
+Nothing to migrate.
+Clearing cache...
+Application cache cleared!
+Cache cleared!
+
 ```
-Done. Navigate to it in your browser again.
+
+Change your file cachet-deployment.yaml in order to update the APP_KEY and apply the deployment like this
+
+```bash
+$ kubectl apply -f cachet-deployment.yaml
+
+$ kubectl get svc -n default
+NAME         TYPE           CLUSTER-IP       EXTERNAL-IP   PORT(S)        AGE
+cachet       LoadBalancer   10.108.29.172    172.17.255.3     8000:30978/TCP   2d3h
+kubernetes   ClusterIP      10.96.0.1        <none>         443/TCP          3h43m
+postgres     LoadBalancer   10.101.54.34     172.17.255.4   5432:32761/TCP   33m
+```
+
+Done. Navigate to it in your browser again (http://172.17.255.3:8000/).

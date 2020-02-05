@@ -1,29 +1,29 @@
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment     
-metadata:            
-  annotations:          
-    kompose.cmd: kompose convert
-    kompose.version: 1.18.0 (06a2e56)
-  creationTimestamp: null                  
-  labels:           
-    io.kompose.service: cachet
-  name: cachet               
+metadata:
+  labels:
+    component: cachet           
+  name: cachet
+  namespace: default    
 spec:                
-  replicas: 1        
-  strategy: {}             
+  replicas: 1       
+  selector:
+    matchLabels:
+      component: cachet
   template:           
     metadata:                                                                                           
       creationTimestamp: null
       labels:
-        io.kompose.service: cachet                            
+        component: cachet                            
     spec:
       containers:
       - env:
         - name: APP_KEY
-          valueFrom:
-            secretKeyRef:
-              name: cachet-secret
-              key: APP_KEY
+          value : base64:zkC1AQuZdj8xqqIi4IIWkKrlPiw8QlfaRQAjxm9ZN8c=
+          #valueFrom:
+          #  secretKeyRef:
+          #    name: cachet-secret
+          #    key: APP_KEY
         - name: APP_LOG
           value: errorlog
         - name: APP_DEBUG
@@ -65,7 +65,30 @@ spec:
           value: database
         - name: QUEUE_DRIVER
           value: database
-        image: vahittabak/cachet-kubernetes
+        image: cachethq/docker:2.3.15
+        #image: cachethq/docker:latest
+        #========================================
+        # https://docs.cachethq.io/docs/base-url
+        # kubectl exec -it cachet-6555fd57c8-njvx2 /bin/bash -n default
+        # cd /var/www/html
+        # ## php artisan key:generate
+        # php artisan app:install
+        # Get key and set APP_ENV in pod
+        # APP_ENV=base64:base64:zkC1AQuZdj8xqqIi4IIWkKrlPiw8QlfaRQAjxm9ZN8c=
+        #========================================
+        # php artisan down
+        # php artisan config:clear
+        # php artisan config:cache
+        # php artisan app:update
+        # php artisan up
+        #========================================
+        # If you experience any issues when running these commands, you may need to execute the following command:
+        # rm -rf bootstrap/cache/*
+        # rm -rf bootstrap/cache{,t}/*
+        # chmod -R 777 storage;chmod -R 777 bootstrap/;;
+        #========================================
+
+        #command: ['sh', '-c', 'cd /var/www/html;php artisan key:generate;chmod -R 777 storage;rm -rf bootstrap/cache/*;chmod -R 777 bootstrap/;rm -rf bootstrap/cache{,t}/*;php artisan config:cache;php artisan app:install;php artisan app:update;']
         name: cachet
         ports:
         - containerPort: 8000
@@ -73,6 +96,6 @@ spec:
       initContainers:
       - name: init-postgres
         image: busybox
-        command: ['sh', '-c', 'until nc -z postgres:5432; do echo waiting for postgres; sleep 2; done;']
+        command: ['sh', '-c', 'until nc -z postgres 5432; do echo waiting for postgres; sleep 2; done;']
       restartPolicy: Always
 status: {}

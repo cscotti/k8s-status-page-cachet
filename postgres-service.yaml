@@ -1,18 +1,25 @@
 apiVersion: v1
 kind: Service
 metadata:
-  annotations:
-    kompose.cmd: kompose convert
-    kompose.version: 1.18.0 (06a2e56)
-  creationTimestamp: null
   labels:
-    io.kompose.service: postgres
+    component: postgres
   name: postgres
+  namespace: default
+  selfLink: /api/v1/namespaces/default/services/postgres
+  namespace: default
 spec:
+  clusterIP: 10.101.54.34
+  externalTrafficPolicy: Cluster
   ports:
-  - port: 5432
+  - nodePort: 32761
+    port: 5432
+    protocol: TCP
     targetPort: 5432
   selector:
-    io.kompose.service: postgres
+    component: postgres
+  sessionAffinity: None
+  type: LoadBalancer
 status:
-  loadBalancer: {}
+  loadBalancer:
+    ingress:
+    - ip: 172.17.255.4
