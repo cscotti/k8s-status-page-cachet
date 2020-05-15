@@ -58,7 +58,7 @@ I've used local volume plugin of Kubernetes,
 https://kubernetes.io/docs/concepts/storage/storage-classes/#local
 
 ```bash
-$ kubectl -f storage-class.yaml
+$ kubectl create -f storage-class.yaml
 $ kubectl get storageclass
 ```
 
@@ -67,8 +67,8 @@ $ kubectl get storageclass
 Create the objects;
 
 ```bash
-$ kubectl -f postgres-volume0-persistentvolume.yaml
-$ kubectl -f postgres-claim0-persistentvolumeclaim.yaml
+$ kubectl create -f postgres-volume0-persistentvolume.yaml
+$ kubectl create -f postgres-claim0-persistentvolumeclaim.yaml
 
 $ kubectl get persistentvolume
 $ kubectl get persistentvolumeclaim
